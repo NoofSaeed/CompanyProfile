@@ -43,7 +43,7 @@ public static class CompanyEndpoints
 
     private static async Task<IResult> GetCompanyInfo(AppDbContext db)
     {
-        var info = await db.CompanyInformation.FirstOrDefaultAsync();
+        var info = await db.CompanyInformation.AsNoTracking().FirstOrDefaultAsync();
         return info is null
             ? Results.NotFound()
             : Results.Ok(new CompanyInfoResponseDto(info.Name, info.Description, info.Vision, info.Mission));
@@ -52,6 +52,7 @@ public static class CompanyEndpoints
     private static async Task<IResult> GetServices(AppDbContext db)
     {
         var services = await db.Services
+            .AsNoTracking()
             .Select(s => new ServiceResponseDto(s.Id, s.Title, s.Description, s.Icon))
             .ToListAsync();
         return Results.Ok(services);
