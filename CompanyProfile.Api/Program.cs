@@ -32,11 +32,4 @@ app.UseCors("AllowFrontend");
 
 app.MapCompanyEndpoints();
 
-// التأكد من بناء قاعدة البيانات تلقائياً وتطبيق الـ Seed Data عند التشغيل الأول
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
-}
-
 app.Run();
