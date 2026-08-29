@@ -1,4 +1,5 @@
-﻿using CompanyProfile.Core.DTOs;
+﻿using CompanyProfile.Api.Filters;
+using CompanyProfile.Core.DTOs;
 using CompanyProfile.Core.Entities;
 using CompanyProfile.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,7 @@ public static class CompanyEndpoints
         publicGroup.MapGet("/services", GetServices)
                    .WithSummary("جلب خدمات الشركة المقسمة للـ Frontend");
 
-        publicGroup.MapPost("/contact", CreateContactMessage)
+        publicGroup.MapPost("/contact", CreateContactMessage).AddEndpointFilter<ValidationFilter<CreateContactMessageDto>>()
                    .WithSummary("إرسال رسالة تواصل جديدة من الـ Frontend");
 
         // --------------------------------------------------------
@@ -28,13 +29,13 @@ public static class CompanyEndpoints
         // --------------------------------------------------------
         var adminGroup = app.MapGroup("/api/admin").WithTags("Admin Dashboard API");
 
-        adminGroup.MapPut("/info", UpdateCompanyInfo)
+        adminGroup.MapPut("/info", UpdateCompanyInfo).AddEndpointFilter<ValidationFilter<UpdateCompanyInfoDto>>()
                   .WithSummary("تعديل ملف الشركة التعريفي الرئيسي");
 
-        adminGroup.MapPost("/services", AddService)
+        adminGroup.MapPost("/services", AddService).AddEndpointFilter<ValidationFilter<CreateServiceDto>>()
                   .WithSummary("إضافة خدمة جديدة قائمة خدمات الشركة");
 
-        adminGroup.MapPut("/services/{id}", UpdateService)
+        adminGroup.MapPut("/services/{id}", UpdateService).AddEndpointFilter<ValidationFilter<UpdateServiceDto>>()
                   .WithSummary("تعديل بيانات خدمة حالية عبر الـ ID");
 
         adminGroup.MapDelete("/services/{id}", DeleteService)
