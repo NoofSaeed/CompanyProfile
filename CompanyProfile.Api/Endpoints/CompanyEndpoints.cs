@@ -4,7 +4,7 @@ using CompanyProfile.Core.Entities;
 using CompanyProfile.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace CompanyProfile.API.Endpoints;
+namespace CompanyProfile.Api.Endpoints;
 
 public static class CompanyEndpoints
 {
@@ -27,7 +27,10 @@ public static class CompanyEndpoints
         // --------------------------------------------------------
         // مجموعات الإدارة (الخاصة بلوحة تحكم الشركة Dashboard)
         // --------------------------------------------------------
-        var adminGroup = app.MapGroup("/api/admin").WithTags("Admin Dashboard API");
+        var adminGroup = app.MapGroup("/api/admin")
+            .RequireAuthorization(policy => policy.RequireRole("Admin"))
+            .WithTags("Admin Dashboard API");
+        adminGroup.MapGet("/info", GetCompanyInfo).WithSummary("جلب معلومات الشركة");
 
         adminGroup.MapPut("/info", UpdateCompanyInfo).AddEndpointFilter<ValidationFilter<UpdateCompanyInfoDto>>()
                   .WithSummary("تعديل ملف الشركة التعريفي الرئيسي");
