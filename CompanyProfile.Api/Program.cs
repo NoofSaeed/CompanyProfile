@@ -63,6 +63,20 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddAuthorization();
 var app = builder.Build();
+#endregion
+
+#region Seed Data
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    await IdentitySeeder.SeedAsync(services);
+    await CompanyProfileSeeder.SeedAsync(services);
+}
+#endregion
+
+ #region Middleware
+
 app.UseAuthentication();
 app.UseAuthorization();
 if (app.Environment.IsDevelopment())

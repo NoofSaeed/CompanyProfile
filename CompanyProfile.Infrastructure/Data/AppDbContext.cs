@@ -99,35 +99,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 .IsRequired();
         });
 
-        //// =========================
-        //// Seed Data
-        //// =========================
-        //modelBuilder.Entity<CompanyInfo>().HasData(
-        //    new CompanyInfo
-        //    {
-        //        Id = 1,
-        //        Name = "تقنية الغد",
-        //        Description = "شركة رائدة في الحلول البرمجية",
-        //        Vision = "رؤيتنا قيادة التحول الرقمي",
-        //        Mission = "رسالتنا تقديم برمجيات عالية الجودة"
-        //    }
-        //);
-
-        //modelBuilder.Entity<Service>().HasData(
-        //    new Service
-        //    {
-        //        Id = 1,
-        //        Title = "تطوير الويب",
-        //        Description = "بناء مواقع وتطبيقات ويب سريعة وآمنة",
-        //        Icon = "web-icon"
-        //    },
-        //    new Service
-        //    {
-        //        Id = 2,
-        //        Title = "تطوير تطبيقات الموبايل",
-        //        Description = "تطبيقات هواتف ذكية لأنظمة iOS و Android",
-        //        Icon = "mobile-icon"
-        //    }
-        //);
+        
     }
 }
