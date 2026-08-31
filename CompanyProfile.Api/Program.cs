@@ -1,16 +1,27 @@
+using CompanyProfile.Api.Endpoints;
 using CompanyProfile.Api.Services;
 using CompanyProfile.API.Endpoints;
 using CompanyProfile.Core.Entities;
 using CompanyProfile.Core.Settings;
 using CompanyProfile.Infrastructure.Data;
+using CompanyProfile.Infrastructure.Data.Seed;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+#region Core
+
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>()
+    ?? [];
 
 builder.Services.AddCors(options =>
 {
@@ -76,7 +87,7 @@ using (var scope = app.Services.CreateScope())
 #endregion
 
  #region Middleware
-
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 if (app.Environment.IsDevelopment())
