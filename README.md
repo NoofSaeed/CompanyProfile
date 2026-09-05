@@ -55,9 +55,10 @@ CompanyProfile
     ├── Data
     ├── Migrations
     └── company.db
-
-    ---
-
+    
+```
+    
+    
     ## 🚀 Getting Started
 
 ### Prerequisites
