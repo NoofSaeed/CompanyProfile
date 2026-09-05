@@ -12,6 +12,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     }
     public DbSet<CompanyInfo> CompanyInformation => Set<CompanyInfo>();
     public DbSet<Service> Services => Set<Service>();
+    public DbSet<UserSession> UserSessions => Set<UserSession>();
     public DbSet<TeamMember> Team => Set<TeamMember>();
     public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
 
@@ -99,6 +100,47 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 .IsRequired();
         });
 
-        
-    }
+        modelBuilder.Entity<UserSession>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.UserId)
+                .IsRequired();
+
+            entity.Property(x => x.SessionHash)
+                .IsRequired();
+
+            entity.Property(x => x.IpAddress)
+                .HasMaxLength(45);
+
+            entity.Property(x => x.UserAgent)
+                .HasMaxLength(1000);
+
+            entity.Property(x => x.UserAgentHash)
+                .HasMaxLength(64);
+
+            entity.Property(x => x.CreatedAtUtc)
+                .IsRequired();
+
+            entity.Property(x => x.LastAccessedAtUtc)
+                .IsRequired();
+
+            entity.Property(x => x.ExpiresAtUtc)
+                .IsRequired();
+
+            entity.Property(x => x.AbsoluteExpiresAtUtc)
+                .IsRequired();
+
+            entity.Property(x => x.IsRevoked)
+                .IsRequired();
+
+            entity.HasIndex(x => x.SessionHash)
+                .IsUnique();
+
+            entity.HasIndex(x => x.ExpiresAtUtc);
+
+            entity.HasIndex(x => x.UserId);
+        });
+        }
+
 }
