@@ -1,28 +1,104 @@
 # 🏢 Company Profile API (.NET 10 & Minimal APIs)
 
-A comprehensive, production-ready educational Web API project representing a Company Profile. Built using **.NET 10** and the latest **Minimal APIs** standards. The project implements a multi-project architecture to enforce **Separation of Concerns**, making it highly optimized for frontend integration (React, Angular, Vue).
+A work-in-progress Web API project for building a Company Profile system using **.NET 10** and **Minimal APIs**.
 
-### ✨ Key Features
-* **Native OpenAPI Specification**: Replaced legacy Swagger libraries with the built-in, native OpenAPI generation introduced in .NET 10.
-* **Scalar UI Integration**: Out-of-the-box integration with the beautiful and modern Scalar API reference client.
-* **Multi-Project Architecture**: Structured into 3 decoupled layers (API, Core, and Infrastructure) mimicking enterprise setups.
-* **DTO Pattern Enforcement**: Database models are strictly isolated. All operations communicate via Data Transfer Objects (DTOs) for maximum security.
-* **CORS Pre-configured**: Pre-configured Cross-Origin Resource Sharing policies to seamlessly hook into your local frontend development servers.
-* **Full Admin CRUD Capabilities**: Complete endpoints designed for both public views and admin dashboard manipulations (Manage info, add/edit/delete services).
+The project is developed incrementally with a focus on clean architecture, security, maintainability, and practical backend development.
 
-### 📂 Solution Breakdown
-1. **`CompanyProfile.Core`**: Pure class library containing domain Entities and DTO records with zero external framework dependencies.
-2. **`CompanyProfile.Infrastructure`**: Data access layer managing SQLite database persistence and seeding via Entity Framework Core.
-3. **`CompanyProfile.API`**: The application entry point hosting the Minimal API endpoints, middleware routing, and configuration.
+---
 
-### 🚀 Getting Started
-Ensure you have the .NET 10 SDK installed, then run the following in your terminal:
+## 🚧 Project Status: Work in Progress
+
+This project is still under active development. New features, improvements, security enhancements, and refactoring are continuously being added.
+
+> **Note:** The current implementation is not the final version and may change as the project evolves.
+
+---
+
+## ✨ Current Features
+
+* **.NET 10 Minimal APIs**
+* **Native OpenAPI**
+* **Scalar API Documentation**
+* **Multi-Project Architecture:**
+  * `Api`
+  * `Core`
+  * `Infrastructure`
+* **DTO-based API design**
+* **Entity Framework Core & SQLite Database**
+* **Configurable CORS**
+* **ASP.NET Core Identity**
+* **Cookie-Based Session Authentication**
+  * Secure Session Token Hashing
+  * Session Management (View active sessions, Revoke single/all/other sessions)
+  * Sliding Expiration & Absolute Expiration
+  * User-Agent verification
+
+---
+
+## 📂 Solution Structure
+
+```text
+CompanyProfile
+│
+├── CompanyProfile.Api
+│   ├── Endpoints
+│   ├── Services
+│   ├── Common
+│   ├── Program.cs
+│   └── appsettings.json
+│
+├── CompanyProfile.Core
+│   ├── Entities
+│   └── DTOs
+│
+└── CompanyProfile.Infrastructure
+    ├── Data
+    ├── Migrations
+    └── company.db
+
+    ---
+
+    ## 🚀 Getting Started
+
+### Prerequisites
+* [.NET 10 SDK](https://dotnet.microsoft.com/)
+* [Git](https://git-scm.com/)
+
+### Clone & Run
 
 ```bash
-# Navigate to the API entry project
-cd CompanyProfile.API
+# Clone the repository
+git clone [https://github.com/NoofSaeed/CompanyProfile.git](https://github.com/NoofSaeed/CompanyProfile.git)
 
-# Run the project
+# Navigate to the API directory
+cd CompanyProfile/CompanyProfile.Api
+
+# Run the application
 dotnet run
-```
-*Your browser will automatically open the Scalar UI doc page at:* `https://localhost:7158/scalar/v1` *(or your custom configured localhost port).*
+
+# Scalar API documentation:
+
+![Company Profile Architecture](images/scalar.png)
+
+* https://localhost:<port>/scalar/v1
+
+The port may differ depending on your local configuration.
+
+---
+## 📚 Technologies
+
+* **C#**
+* **.NET 10**
+* **ASP.NET Core Minimal APIs**
+* **Entity Framework Core**
+* **SQLite**
+* **ASP.NET Core Identity**
+* **Scalar**
+
+---
+
+## ⭐ Feedback
+
+This project is being built and improved step by step.
+
+If you find it useful, feel free to **⭐ Star** the repository and share your feedback!
