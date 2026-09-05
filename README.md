@@ -79,8 +79,8 @@ dotnet run
 
 # Scalar API documentation:
 
-![Company Profile Architecture](images/scalar.png)
-
+![Company Profile Architecture](./scalar.png)
+add scalar.png
 * https://localhost:<port>/scalar/v1
 
 The port may differ depending on your local configuration.
