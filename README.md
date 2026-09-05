@@ -76,7 +76,7 @@ cd CompanyProfile/CompanyProfile.Api
 
 # Run the application
 dotnet run
-
+```
 # Scalar API documentation:
 
 ![Company Profile Architecture](./scalar.png)
