@@ -26,10 +26,4 @@
     <ProjectReference Include="..\CompanyProfile.Infrastructure\CompanyProfile.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\ValidationResources.ar.resx">
-      <CustomToolNamespace></CustomToolNamespace>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>

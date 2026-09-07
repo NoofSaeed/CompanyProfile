@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CompanyProfile.Core.Resources;
 
 namespace CompanyProfile.Core.DTOs;
-
 
 public record CompanyInfoResponseDto(
     string Language,
@@ -12,32 +12,48 @@ public record CompanyInfoResponseDto(
 
 public record UpdateCompanyInfoDto(
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        150,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Name")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(150,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Name")]
     string Name,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        2000,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Description")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(2000,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Description")]
     string Description,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        1000,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Vision")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(1000,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Vision")]
     string Vision,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        1000,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Mission")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(1000,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Mission")]
     string Mission);
 
 public record ServiceResponseDto(
@@ -49,193 +65,281 @@ public record ServiceResponseDto(
 
 public record CreateServiceDto(
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        150,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Title")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(150,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Title")]
     string Title,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        2000,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Description")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(2000,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Description")]
     string Description,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        100,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Icon")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(100,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Icon")]
     string Icon);
 
 public record UpdateServiceDto(
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        150,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Title")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(150,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Title")]
     string Title,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        2000,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Description")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(2000,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Description")]
     string Description,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        100,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Icon")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(100,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Icon")]
     string Icon);
-
 
 public record CreateServiceTranslationDto(
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        150,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Title")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(150,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Title")]
     string Title,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        2000,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Description")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(2000,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Description")]
     string Description);
 
 public record UpdateServiceTranslationDto(
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        150,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Title")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(150,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Title")]
     string Title,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        2000,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Description")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(2000,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Description")]
     string Description);
 
 public record CreateTeamMemberDto(
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        500,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.ImageUrl")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(500,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "ImageUrl")]
     string ImageUrl);
 
 public record UpdateTeamMemberDto(
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        500,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.ImageUrl")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(500,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "ImageUrl")]
     string ImageUrl);
 
 public record CreateTeamMemberTranslationDto(
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        150,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Name")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(150,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Name")]
     string Name,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        150,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Role")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(150,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Role")]
     string Role,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        2000,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Bio")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(2000,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Bio")]
     string Bio);
 
 public record UpdateTeamMemberTranslationDto(
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        150,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Name")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(150,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Name")]
     string Name,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        150,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Role")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(150,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Role")]
     string Role,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        2000,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Bio")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(2000,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Bio")]
     string Bio);
-
 
 public record CreateContactMessageDto(
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        150,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Name")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(150,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Name")]
     string Name,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
     [property: EmailAddress(
-        ErrorMessage = "Validation.EmailAddress")]
-    [property: StringLength(
-        255,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Email")]
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "EmailAddress")]
+    [property: StringLength(255,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Email")]
     string Email,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        200,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Subject")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(200,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Subject")]
     string Subject,
 
-    [property: Required(ErrorMessage = "Validation.Required")]
-    [property: StringLength(
-        5000,
-        ErrorMessage = "Validation.StringLength")]
-    [property: Display(Name = "Validation.Message")]
+    [property: Required(
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "Required")]
+    [property: StringLength(5000,
+        ErrorMessageResourceType = typeof(ValidationResources),
+        ErrorMessageResourceName = "StringLength")]
+    [property: Display(
+        ResourceType = typeof(ValidationResources),
+        Name = "Message")]
     string Message);
 
 public record ContactMessageResponseDto(
     int Id,
     string Message,
     DateTime CreatedAt);
+
 public record ServiceWithTranslationsResponseDto(
     int Id,
     string Icon,
-    List<ServiceTranslationResponseDto> Translations
-);
+    List<ServiceTranslationResponseDto> Translations);
 
 public record ServiceTranslationResponseDto(
     string Language,
     string Title,
-    string Description
-);
-public record CompanyInfoWithTranslationsResponseDto(List<CompanyInfoResponseDto> Translations);
+    string Description);
+
+public record CompanyInfoWithTranslationsResponseDto(
+    List<CompanyInfoResponseDto> Translations);

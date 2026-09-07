@@ -1,25 +1,20 @@
-﻿using CompanyProfile.Api.Resources;
+﻿namespace CompanyProfile.Api.Filters;
+
+using CompanyProfile.Core.Resources;
 using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-namespace CompanyProfile.Api.Filters;
-
-public sealed class ValidationFilter<T> : IEndpointFilter
-    where T : class
+public sealed class ValidationFilter<T> : IEndpointFilter where T : class
 {
     private readonly IStringLocalizer<ValidationResources> _localizer;
 
-    public ValidationFilter(
-        IStringLocalizer<ValidationResources> localizer)
+    public ValidationFilter(IStringLocalizer<ValidationResources> localizer)
     {
         _localizer = localizer;
     }
 
-
-    public async ValueTask<object?> InvokeAsync(
-        EndpointFilterInvocationContext context,
-        EndpointFilterDelegate next)
+    public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
         var model = context.Arguments
             .OfType<T>()
@@ -29,7 +24,6 @@ public sealed class ValidationFilter<T> : IEndpointFilter
             return await next(context);
 
         var validationContext = new ValidationContext(model);
-
         var validationResults = new List<ValidationResult>();
 
         var isValid = Validator.TryValidateObject(
@@ -53,12 +47,7 @@ public sealed class ValidationFilter<T> : IEndpointFilter
             {
                 var property = typeof(T).GetProperty(member);
 
-                var errorKey = result.ErrorMessage
-                    ?? "Validation.Invalid";
-
-                var message = GetLocalizedMessage(
-                    property,
-                    errorKey);
+                var message = GetLocalizedMessage(property, result.ErrorMessage);
 
                 if (!errors.TryGetValue(member, out var existing))
                 {
@@ -66,11 +55,7 @@ public sealed class ValidationFilter<T> : IEndpointFilter
                 }
                 else if (!existing.Contains(message))
                 {
-                    errors[member] =
-                    [
-                        .. existing,
-                        message
-                    ];
+                    errors[member] = [.. existing, message];
                 }
             }
         }
@@ -78,35 +63,28 @@ public sealed class ValidationFilter<T> : IEndpointFilter
         return Results.ValidationProblem(errors);
     }
 
-    private string GetLocalizedMessage(
-        PropertyInfo? property,
-        string errorKey)
+    private string GetLocalizedMessage(PropertyInfo? property, string? rawErrorMessage)
     {
-        var localizedTemplate = _localizer[errorKey];
-       
-        if (localizedTemplate.ResourceNotFound)
-            return "not found";
+        if (string.IsNullOrEmpty(rawErrorMessage))
+            rawErrorMessage = "Validation.Invalid";
 
         var displayName = GetDisplayName(property);
 
+        var localizedTemplate = _localizer[rawErrorMessage];
+
+        if (localizedTemplate.ResourceNotFound)
+            return rawErrorMessage;
+
         var attribute = property?
             .GetCustomAttributes<ValidationAttribute>()
-            .FirstOrDefault(x => x.ErrorMessage == errorKey);
+            .FirstOrDefault(x => x.ErrorMessage == rawErrorMessage);
 
         return attribute switch
         {
             StringLengthAttribute stringLength =>
-                string.Format(
-                    localizedTemplate.Value,
-                    displayName,
-                    stringLength.MaximumLength),
+                string.Format(localizedTemplate.Value, displayName, stringLength.MaximumLength),
 
-            RequiredAttribute or EmailAddressAttribute =>
-                string.Format(
-                    localizedTemplate.Value,
-                    displayName),
-
-            _ => localizedTemplate.Value
+            _ => string.Format(localizedTemplate.Value, displayName)
         };
     }
 
@@ -119,18 +97,10 @@ public sealed class ValidationFilter<T> : IEndpointFilter
             .GetCustomAttributes<DisplayAttribute>()
             .FirstOrDefault();
 
-        if (displayAttribute is null ||
-            string.IsNullOrWhiteSpace(displayAttribute.Name))
-        {
-            return property.Name;
-        }
+        var keyToLocate = displayAttribute?.Name ?? $"Validation.{property.Name}";
 
-        var localizedName =
-            _localizer[displayAttribute.Name];
+        var localizedName = _localizer[keyToLocate];
 
-        return localizedName.ResourceNotFound
-            ? property.Name
-            : "not found";
-        ;
+        return localizedName.ResourceNotFound ? property.Name : localizedName.Value;
     }
 }
