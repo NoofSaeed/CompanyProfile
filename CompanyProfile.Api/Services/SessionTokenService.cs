@@ -13,8 +13,7 @@ public class SessionTokenService : ISessionTokenService
 
     public string Hash(string token)
     {
-        var hash = SHA256.HashData(
-            Encoding.UTF8.GetBytes(token));
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(token));
 
         return Convert.ToHexString(hash);
     }

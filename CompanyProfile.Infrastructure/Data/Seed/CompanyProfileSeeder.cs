@@ -19,14 +19,31 @@ public static class CompanyProfileSeeder
         if (await dbContext.CompanyInformation.AnyAsync())
             return;
 
-        dbContext.CompanyInformation.Add(new CompanyInfo
+        var companyInfo = new CompanyInfo
         {
             Id = 1,
-            Name = "تقنية الغد",
-            Description = "شركة رائدة في الحلول البرمجية",
-            Vision = "رؤيتنا قيادة التحول الرقمي",
-            Mission = "رسالتنا تقديم برمجيات عالية الجودة"
-        });
+            Translations =
+            [
+                new CompanyInfoTranslation
+                {
+                    Language = "ar",
+                    Name = "تقنية الغد",
+                    Description = "شركة رائدة في الحلول البرمجية",
+                    Vision = "رؤيتنا قيادة التحول الرقمي",
+                    Mission = "رسالتنا تقديم برمجيات عالية الجودة"
+                },
+                new CompanyInfoTranslation
+                {
+                    Language = "en",
+                    Name = "Tomorrow Technology",
+                    Description = "A leading company in software solutions",
+                    Vision = "Our vision is to lead digital transformation",
+                    Mission = "Our mission is to deliver high-quality software"
+                }
+            ]
+        };
+
+        dbContext.CompanyInformation.Add(companyInfo);
 
         await dbContext.SaveChangesAsync();
     }
@@ -40,16 +57,42 @@ public static class CompanyProfileSeeder
             new Service
             {
                 Id = 1,
-                Title = "تطوير الويب",
-                Description = "بناء مواقع وتطبيقات ويب سريعة وآمنة",
-                Icon = "web-icon"
+                Icon = "web-icon",
+                Translations =
+                [
+                    new ServiceTranslation
+                    {
+                        Language = "ar",
+                        Title = "تطوير الويب",
+                        Description = "بناء مواقع وتطبيقات ويب سريعة وآمنة"
+                    },
+                    new ServiceTranslation
+                    {
+                        Language = "en",
+                        Title = "Web Development",
+                        Description = "Building fast and secure websites and web applications"
+                    }
+                ]
             },
             new Service
             {
                 Id = 2,
-                Title = "تطوير تطبيقات الموبايل",
-                Description = "تطبيقات هواتف ذكية لأنظمة iOS و Android",
-                Icon = "mobile-icon"
+                Icon = "mobile-icon",
+                Translations =
+                [
+                    new ServiceTranslation
+                    {
+                        Language = "ar",
+                        Title = "تطوير تطبيقات الموبايل",
+                        Description = "تطبيقات هواتف ذكية لأنظمة iOS و Android"
+                    },
+                    new ServiceTranslation
+                    {
+                        Language = "en",
+                        Title = "Mobile App Development",
+                        Description = "Smartphone applications for iOS and Android"
+                    }
+                ]
             });
 
         await dbContext.SaveChangesAsync();

@@ -10,18 +10,41 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         : base(options)
     {
     }
+
     public DbSet<CompanyInfo> CompanyInformation => Set<CompanyInfo>();
+    public DbSet<CompanyInfoTranslation> CompanyInfoTranslations => Set<CompanyInfoTranslation>();
+
     public DbSet<Service> Services => Set<Service>();
+    public DbSet<ServiceTranslation> ServiceTranslations => Set<ServiceTranslation>();
+
     public DbSet<UserSession> UserSessions => Set<UserSession>();
+
     public DbSet<TeamMember> Team => Set<TeamMember>();
+    public DbSet<TeamMemberTranslation> TeamMemberTranslations => Set<TeamMemberTranslation>();
+
     public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<CompanyInfo>(entity =>
         {
             entity.HasKey(x => x.Id);
+
+            entity.HasMany(x => x.Translations)
+                .WithOne(x => x.CompanyInfo)
+                .HasForeignKey(x => x.CompanyInfoId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<CompanyInfoTranslation>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Language)
+                .IsRequired()
+                .HasMaxLength(2);
 
             entity.Property(x => x.Name)
                 .IsRequired()
@@ -38,10 +61,36 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(x => x.Mission)
                 .IsRequired()
                 .HasMaxLength(1000);
+
+            entity.HasIndex(x => new
+            {
+                x.CompanyInfoId,
+                x.Language
+            })
+            .IsUnique();
         });
+
         modelBuilder.Entity<Service>(entity =>
         {
             entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Icon)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.HasMany(x => x.Translations)
+                .WithOne(x => x.Service)
+                .HasForeignKey(x => x.ServiceId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ServiceTranslation>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Language)
+                .IsRequired()
+                .HasMaxLength(2);
 
             entity.Property(x => x.Title)
                 .IsRequired()
@@ -51,14 +100,35 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 .IsRequired()
                 .HasMaxLength(1000);
 
-            entity.Property(x => x.Icon)
-                .IsRequired()
-                .HasMaxLength(100);
+            entity.HasIndex(x => new
+            {
+                x.ServiceId,
+                x.Language
+            })
+            .IsUnique();
         });
 
         modelBuilder.Entity<TeamMember>(entity =>
         {
             entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.ImageUrl)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            entity.HasMany(x => x.Translations)
+                .WithOne(x => x.TeamMember)
+                .HasForeignKey(x => x.TeamMemberId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<TeamMemberTranslation>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Language)
+                .IsRequired()
+                .HasMaxLength(2);
 
             entity.Property(x => x.Name)
                 .IsRequired()
@@ -72,10 +142,14 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 .IsRequired()
                 .HasMaxLength(2000);
 
-            entity.Property(x => x.ImageUrl)
-                .IsRequired()
-                .HasMaxLength(500);
+            entity.HasIndex(x => new
+            {
+                x.TeamMemberId,
+                x.Language
+            })
+            .IsUnique();
         });
+
         modelBuilder.Entity<ContactMessage>(entity =>
         {
             entity.HasKey(x => x.Id);
@@ -141,6 +215,5 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
 
             entity.HasIndex(x => x.UserId);
         });
-        }
-
+    }
 }
