@@ -21,7 +21,7 @@ This project is still under active development. New features, improvements, secu
 * **Scalar API Documentation**
 * **Multi-Project Architecture:**
   * `Api`
-  * `Core`
+  * `Shared`
   * `Infrastructure`
 * **DTO-based API design**
 * **Entity Framework Core & SQLite Database**
@@ -43,18 +43,19 @@ CompanyProfile
 ├── CompanyProfile.Api
 │   ├── Endpoints
 │   ├── Services
-│   ├── Common
 │   ├── Program.cs
 │   └── appsettings.json
 │
-├── CompanyProfile.Core
-│   ├── Entities
+├── CompanyProfile.Shared
+│   ├── Common
 │   └── DTOs
+|   |__ Resources
 │
 └── CompanyProfile.Infrastructure
     ├── Data
     ├── Migrations
     └── company.db
+    └── Entities
     
 ```
     
