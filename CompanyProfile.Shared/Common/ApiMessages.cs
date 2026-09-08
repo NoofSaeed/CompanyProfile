@@ -1,4 +1,4 @@
-﻿namespace CompanyProfile.Api.Common;
+﻿namespace CompanyProfile.Shared.Common;
 
 public static class ApiMessages
 {

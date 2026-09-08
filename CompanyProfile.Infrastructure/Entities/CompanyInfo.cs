@@ -1,4 +1,4 @@
-﻿namespace CompanyProfile.Core.Entities;
+﻿namespace CompanyProfile.Infrastructure.Entities;
 
 public class CompanyInfo
 {

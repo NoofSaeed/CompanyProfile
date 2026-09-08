@@ -1,6 +1,6 @@
 ﻿namespace CompanyProfile.Api.Filters;
 
-using CompanyProfile.Core.Resources;
+using CompanyProfile.Shared.Resources;
 using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;

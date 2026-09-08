@@ -1,4 +1,4 @@
-﻿namespace CompanyProfile.Api.Common;
+﻿namespace CompanyProfile.Shared.Common;
 
 public record ApiResponse<T>(
     bool Success,

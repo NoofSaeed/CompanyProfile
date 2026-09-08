@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CompanyProfile.Core.Resources {
+namespace CompanyProfile.Shared.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace CompanyProfile.Core.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CompanyProfile.Core.Resources.ValidationResources", typeof(ValidationResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CompanyProfile.Shared.Resources.ValidationResources", typeof(ValidationResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

@@ -1,9 +1,7 @@
-﻿using CompanyProfile.Api.Filters;
+﻿using CompanyProfile.Shared.Common;
+using CompanyProfile.Api.Filters;
 using CompanyProfile.Api.Services;
-using CompanyProfile.Core.DTOs;
-using CompanyProfile.Core.Entities;
-using CompanyProfile.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
+using CompanyProfile.Shared.DTOs;
 
 namespace CompanyProfile.Api.Endpoints;
 
@@ -28,17 +26,16 @@ public static class CompanyEndpoints
             .WithSummary("إرسال رسالة تواصل جديدة");
 
         var adminGroup = app.MapGroup("/api/admin")
-            .RequireAuthorization(policy =>
-                policy.RequireRole("Admin"))
+            .RequireAuthorization(policy => policy.RequireRole("Admin"))
             .WithTags("Admin Dashboard API");
 
-        adminGroup.MapGet("/servicesWithAllTrans/{id}", GetServiceByIdِWithAllTrans)
-          .WithSummary("جلب خدمة معينة مع جميع الترجمات");
+        adminGroup.MapGet("/servicesWithAllTrans/{id}", GetServiceByIdWithAllTrans)
+            .WithSummary("جلب خدمة معينة مع جميع الترجمات");
 
         adminGroup.MapGet("/infoWithTran", GetCompanyInfoWithAllTrans)
-             .WithSummary("جلب معلومات الشركة بجميع اللغات");
+            .WithSummary("جلب معلومات الشركة بجميع اللغات");
 
-        adminGroup.MapPut("/{language}/info",UpdateCompanyInfo)
+        adminGroup.MapPut("/{language}/info", UpdateCompanyInfo)
             .AddEndpointFilter<ValidationFilter<UpdateCompanyInfoDto>>()
             .WithSummary("تعديل معلومات الشركة باللغة المحددة");
 
@@ -51,266 +48,107 @@ public static class CompanyEndpoints
             .WithSummary("تعديل خدمة باللغة المحددة");
 
         adminGroup.MapDelete("/services/{id}", DeleteService)
-                .WithSummary("حذف خدمة نهائياً من قاعدة البيانات");
-
+            .WithSummary("حذف خدمة نهائياً من قاعدة البيانات");
     }
-
 
     private static async Task<IResult> GetCompanyInfo(
-        AppDbContext db,
+        CompanyService companyService,
         ILanguageContext languageContext)
     {
-        var language = languageContext.Language;
+        var data = await companyService.GetCompanyInfoAsync(languageContext.Language);
 
-        var translation = await db.CompanyInformation
-            .AsNoTracking()
-            .SelectMany(info => info.Translations)
-            .FirstOrDefaultAsync(t =>
-                t.Language == language);
+        if (data is null)
+            return Results.NotFound(ApiResponse<CompanyInfoResponseDto>.FailureResponse("بيانات الشركة غير موجودة."));
 
-        if (translation is null)
-            return Results.NotFound();
-
-        return Results.Ok(
-            new CompanyInfoResponseDto(
-                translation.Language,
-                translation.Name,
-                translation.Description,
-                translation.Vision,
-                translation.Mission));
-    }
-    private static async Task<IResult> GetCompanyInfoWithAllTrans(AppDbContext db)
-    {
-        var translations = await db.CompanyInformation
-            .AsNoTracking()
-            .SelectMany(info => info.Translations)
-            .Select(t => new CompanyInfoResponseDto(
-                t.Language,
-                t.Name,
-                t.Description,
-                t.Vision,
-                t.Mission))
-            .ToListAsync();
-
-        if (translations.Count == 0)
-            return Results.NotFound();
-
-        return Results.Ok(new CompanyInfoWithTranslationsResponseDto(translations));
+        return Results.Ok(ApiResponse<CompanyInfoResponseDto>.SuccessResponse(data, ApiMessages.Success));
     }
 
-
-    private static async Task<IResult> GetServices(AppDbContext db,ILanguageContext languageContext)
+    private static async Task<IResult> GetCompanyInfoWithAllTrans(CompanyService companyService)
     {
-        var language = languageContext.Language;
+        var data = await companyService.GetCompanyInfoWithAllTransAsync();
 
-        var services = await db.ServiceTranslations
-            .AsNoTracking()
-            .Where(t => t.Language == language)
-            .Select(t => new ServiceResponseDto(
-                t.ServiceId,
-                t.Language,
-                t.Title,
-                t.Description,
-                t.Service.Icon))
-            .ToListAsync();
+        if (data is null)
+            return Results.NotFound(ApiResponse<CompanyInfoWithTranslationsResponseDto>.FailureResponse("بيانات الشركة غير موجودة."));
 
-        return Results.Ok(services);
+        return Results.Ok(ApiResponse<CompanyInfoWithTranslationsResponseDto>.SuccessResponse(data, ApiMessages.Success));
     }
 
-    private static async Task<IResult> GetServiceById(int id, AppDbContext db, ILanguageContext languageContext)
+    private static async Task<IResult> GetServices(
+        CompanyService companyService,
+        ILanguageContext languageContext)
     {
-        var language = languageContext.Language;
+        var services = await companyService.GetServicesAsync(languageContext.Language);
+        return Results.Ok(ApiResponse<List<ServiceResponseDto>>.SuccessResponse(services, ApiMessages.Success));
+    }
 
-        var service = await db.ServiceTranslations
-            .AsNoTracking()
-            .Where(t =>
-                t.ServiceId == id &&
-                t.Language == language)
-            .Select(t => new ServiceResponseDto(
-                t.ServiceId,
-                t.Language,
-                t.Title,
-                t.Description,
-                t.Service.Icon))
-            .FirstOrDefaultAsync();
+    private static async Task<IResult> GetServiceById(
+        int id,
+        CompanyService companyService,
+        ILanguageContext languageContext)
+    {
+        var service = await companyService.GetServiceByIdAsync(id, languageContext.Language);
 
         if (service is null)
-            return Results.NotFound("الخدمة غير موجودة.");
+            return Results.NotFound(ApiResponse<ServiceResponseDto>.FailureResponse("الخدمة غير موجودة."));
 
-        return Results.Ok(service);
+        return Results.Ok(ApiResponse<ServiceResponseDto>.SuccessResponse(service, ApiMessages.Success));
     }
 
-    private static async Task<IResult> GetServiceByIdِWithAllTrans(int id,AppDbContext db)
+    private static async Task<IResult> GetServiceByIdWithAllTrans(int id, CompanyService companyService)
     {
-        var service = await db.Services
-            .AsNoTracking()
-            .Where(s => s.Id == id)
-            .Select(s => new ServiceWithTranslationsResponseDto(
-                s.Id,
-                s.Icon,
-                s.Translations
-                    .Select(t => new ServiceTranslationResponseDto(
-                        t.Language,
-                        t.Title,
-                        t.Description))
-                    .ToList()
-            ))
-            .FirstOrDefaultAsync();
+        var service = await companyService.GetServiceByIdWithAllTransAsync(id);
 
         if (service is null)
-            return Results.NotFound("الخدمة غير موجودة.");
+            return Results.NotFound(ApiResponse<ServiceWithTranslationsResponseDto>.FailureResponse("الخدمة غير موجودة."));
 
-        return Results.Ok(service);
+        return Results.Ok(ApiResponse<ServiceWithTranslationsResponseDto>.SuccessResponse(service, ApiMessages.Success));
     }
-   
-    private static async Task<IResult> CreateContactMessage(CreateContactMessageDto inputDto,AppDbContext db)
+
+    private static async Task<IResult> CreateContactMessage(CreateContactMessageDto inputDto, CompanyService companyService)
     {
-        var dbMessage = new ContactMessage
-        {
-            Name = inputDto.Name,
-            Email = inputDto.Email,
-            Subject = inputDto.Subject,
-            Message = inputDto.Message,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        db.ContactMessages.Add(dbMessage);
-
-        await db.SaveChangesAsync();
+        var responseDto = await companyService.CreateContactMessageAsync(inputDto);
 
         return Results.Created(
-            $"/api/contact/{dbMessage.Id}",
-            new ContactMessageResponseDto(
-                dbMessage.Id,
-                "تم استلام رسالتك.",
-                dbMessage.CreatedAt));
+            $"/api/contact/{responseDto.Id}",
+            ApiResponse<ContactMessageResponseDto>.SuccessResponse(responseDto, ApiMessages.Success));
     }
 
-    private static async Task<IResult> UpdateCompanyInfo(string language,UpdateCompanyInfoDto dto,AppDbContext db)
+    private static async Task<IResult> UpdateCompanyInfo(string language, UpdateCompanyInfoDto dto, CompanyService companyService)
     {
-        var info = await db.CompanyInformation
-            .Include(x => x.Translations)
-            .FirstOrDefaultAsync();
+        var responseDto = await companyService.UpdateCompanyInfoAsync(language, dto);
 
-        if (info is null)
-            return Results.NotFound("بيانات الشركة غير موجودة.");
+        if (responseDto is null)
+            return Results.NotFound(ApiResponse<CompanyInfoResponseDto>.FailureResponse("بيانات الشركة غير موجودة."));
 
-        var translation = info.Translations
-            .FirstOrDefault(t => t.Language == language);
-
-        if (translation is null)
-        {
-            translation = new CompanyInfoTranslation
-            {
-                CompanyInfoId = info.Id,
-                Language = language
-            };
-
-            info.Translations.Add(translation);
-        }
-
-        translation.Name = dto.Name;
-        translation.Description = dto.Description;
-        translation.Vision = dto.Vision;
-        translation.Mission = dto.Mission;
-
-        await db.SaveChangesAsync();
-
-        return Results.Ok(
-            new CompanyInfoResponseDto(
-                translation.Language,
-                translation.Name,
-                translation.Description,
-                translation.Vision,
-                translation.Mission));
+        return Results.Ok(ApiResponse<CompanyInfoResponseDto>.SuccessResponse(responseDto, ApiMessages.Success));
     }
 
-    private static async Task<IResult> AddService(string language,CreateServiceDto dto,AppDbContext db)
+    private static async Task<IResult> AddService(string language, CreateServiceDto dto, CompanyService companyService)
     {
-        var newService = new Service
-        {
-            Icon = dto.Icon,
-            Translations =
-            [
-                new ServiceTranslation
-            {
-                Language = language,
-                Title = dto.Title,
-                Description = dto.Description
-            }
-            ]
-        };
-
-        db.Services.Add(newService);
-
-        await db.SaveChangesAsync();
+        var responseDto = await companyService.AddServiceAsync(language, dto);
 
         return Results.Created(
-            $"/api/services/{newService.Id}",
-            new ServiceResponseDto(
-                newService.Id,
-                language,
-                dto.Title,
-                dto.Description,
-                dto.Icon));
+            $"/api/services/{responseDto.Id}",
+            ApiResponse<ServiceResponseDto>.SuccessResponse(responseDto, ApiMessages.Success));
     }
 
-    private static async Task<IResult> UpdateService(int id,string language,UpdateServiceDto dto,AppDbContext db)
+    private static async Task<IResult> UpdateService(int id, string language, UpdateServiceDto dto, CompanyService companyService)
     {
-        var service = await db.Services
-            .Include(s => s.Translations)
-            .FirstOrDefaultAsync(s => s.Id == id);
+        var responseDto = await companyService.UpdateServiceAsync(id, language, dto);
 
-        if (service is null)
-            return Results.NotFound("الخدمة غير موجودة.");
+        if (responseDto is null)
+            return Results.NotFound(ApiResponse<ServiceResponseDto>.FailureResponse("الخدمة غير موجودة."));
 
-        service.Icon = dto.Icon;
-
-        var translation = service.Translations
-            .FirstOrDefault(t => t.Language == language);
-
-        if (translation is null)
-        {
-            translation = new ServiceTranslation
-            {
-                ServiceId = service.Id,
-                Language = language
-            };
-
-            service.Translations.Add(translation);
-        }
-
-        translation.Title = dto.Title;
-        translation.Description = dto.Description;
-
-        await db.SaveChangesAsync();
-
-        return Results.Ok(
-            new ServiceResponseDto(
-                service.Id,
-                language,
-                translation.Title,
-                translation.Description,
-                service.Icon));
+        return Results.Ok(ApiResponse<ServiceResponseDto>.SuccessResponse(responseDto, ApiMessages.Success));
     }
 
-   
-    private static async Task<IResult> DeleteService(int id,AppDbContext db)
+    private static async Task<IResult> DeleteService(int id, CompanyService companyService)
     {
-        var service = await db.Services
-            .Include(s => s.Translations)
-            .FirstOrDefaultAsync(s =>s.Id == id);
+        var isDeleted = await companyService.DeleteServiceAsync(id);
 
-        if (service is null)
-            return Results.NotFound("الخدمة المطلوبة غير موجودة.");
+        if (!isDeleted)
+            return Results.NotFound(ApiResponse<string>.FailureResponse("الخدمة المطلوبة غير موجودة."));
 
-        db.Services.Remove(service);
-
-        await db.SaveChangesAsync();
-
-        return Results.Ok(new
-        {
-            Message = "تم حذف الخدمة وترجماتها بنجاح."
-        });
+        return Results.Ok(ApiResponse<string>.SuccessResponse("تم حذف الخدمة وترجماتها بنجاح.", ApiMessages.Success));
     }
 }

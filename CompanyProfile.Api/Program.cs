@@ -2,7 +2,7 @@ using CompanyProfile.Api;
 using CompanyProfile.Api.Authentication;
 using CompanyProfile.Api.Endpoints;
 using CompanyProfile.Api.Services;
-using CompanyProfile.Core.Entities;
+using CompanyProfile.Infrastructure.Entities;
 using CompanyProfile.Infrastructure.Data;
 using CompanyProfile.Infrastructure.Data.Seed;
 using Microsoft.AspNetCore.Authentication;
@@ -68,6 +68,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(
         "Data Source=../CompanyProfile.Infrastructure/company.db"));
 
+builder.Services.AddScoped<IApplicationDbContext>(provider =>
+    provider.GetRequiredService<AppDbContext>());
+
+builder.Services.AddScoped<CompanyService>();
 #endregion
 
 #region Identity

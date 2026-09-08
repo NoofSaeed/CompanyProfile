@@ -1,4 +1,4 @@
-﻿using CompanyProfile.Core.Entities;
+﻿using CompanyProfile.Infrastructure.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 

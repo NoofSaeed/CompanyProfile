@@ -1,12 +1,12 @@
-﻿using CompanyProfile.Api.Common;
+﻿using CompanyProfile.Shared.Common;
 using CompanyProfile.Api.Services;
-using CompanyProfile.Core.DTOs.Auth;
-using CompanyProfile.Core.Entities;
+using CompanyProfile.Shared.DTOs.Auth;
 using CompanyProfile.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
+using CompanyProfile.Infrastructure.Entities;
 
 namespace CompanyProfile.Api.Endpoints;
 

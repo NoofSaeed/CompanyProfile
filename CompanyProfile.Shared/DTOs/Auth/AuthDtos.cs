@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CompanyProfile.Core.DTOs.Auth
+﻿namespace CompanyProfile.Shared.DTOs.Auth
 {
     public sealed record LoginRequest(string UserName,string Password);
 

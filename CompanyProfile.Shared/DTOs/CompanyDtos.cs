@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CompanyProfile.Core.Resources;
+using CompanyProfile.Shared.Resources;
 
-namespace CompanyProfile.Core.DTOs;
+namespace CompanyProfile.Shared.DTOs;
 
 public record CompanyInfoResponseDto(
     string Language,

@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Text.Encodings.Web;
 using CompanyProfile.Api.Services;
-using CompanyProfile.Core.Entities;
+using CompanyProfile.Infrastructure.Entities;
 using CompanyProfile.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;

@@ -3,6 +3,6 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="CompanyProfile.Api/CompanyProfile.Api.csproj" />
-  <Project Path="CompanyProfile.Core/CompanyProfile.Core.csproj" />
   <Project Path="CompanyProfile.Infrastructure/CompanyProfile.Infrastructure.csproj" />
+  <Project Path="CompanyProfile.Shared/CompanyProfile.Shared.csproj" Id="85315537-0757-4128-bece-c86d1e1999c6" />
 </Solution>

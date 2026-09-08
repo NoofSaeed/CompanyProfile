@@ -1,4 +1,4 @@
-﻿using CompanyProfile.Core.Entities;
+﻿using CompanyProfile.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
