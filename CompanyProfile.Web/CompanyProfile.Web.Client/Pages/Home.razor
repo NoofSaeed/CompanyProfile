@@ -1,0 +1,268 @@
+﻿@page "/"
+@using System.ComponentModel.DataAnnotations
+@using CompanyProfile.Shared.DTOs
+@using CompanyProfile.Web.Client.Services
+@inject CompanyApiClient CompanyApiClient
+@inject IJSRuntime JS
+
+<PageTitle>@(IsArabic ? "تقنية الغد | حلول رقمية تصنع الفرق" : "Tomorrow Technology | Digital solutions that make a difference")</PageTitle>
+
+<div class="landing-page" dir="@(IsArabic ? "rtl" : "ltr")">
+	<header class="site-header">
+		<a class="brand" href="#top" aria-label="@Text("العودة إلى الرئيسية", "Back to home")">
+			<span class="brand-mark">T</span>
+			<span class="brand-name">@(companyInfo?.Name ?? (IsArabic ? "تقنية الغد" : "Tomorrow Technology"))</span>
+		</a>
+
+		<nav class="desktop-nav" aria-label="@(IsArabic ? "التنقل الرئيسي" : "Main navigation")">
+			<a href="#services">@Text("خدماتنا", "Services")</a>
+			<a href="#story">@Text("من نحن", "Our story")</a>
+			<a href="#team">@Text("فريقنا", "Team")</a>
+			<a href="#contact">@Text("تواصل معنا", "Contact")</a>
+		</nav>
+
+		<button class="language-switcher" type="button" @onclick="ToggleLanguage" aria-label="@Text("تغيير اللغة", "Change language")">
+			<span class="language-dot"></span>
+			@(IsArabic ? "EN" : "عربي")
+		</button>
+	</header>
+
+	@if (isLoading)
+	{
+		<div class="loading-state"><span></span><span></span><span></span></div>
+	}
+	else if (companyInfo is null)
+	{
+		<section class="error-state">
+			<p>@Text("تعذر تحميل بيانات الشركة حاليًا.", "Company information could not be loaded right now.")</p>
+			<button class="button button-dark" type="button" @onclick="LoadContentAsync">@Text("إعادة المحاولة", "Try again")</button>
+		</section>
+	}
+	else
+	{
+		<section id="top" class="hero-section">
+			<div class="hero-copy">
+				<p class="eyebrow"><span></span>@Text("نبتكر ما هو قادم", "WE DESIGN WHAT'S NEXT")</p>
+				<h1>@companyInfo.Name</h1>
+				<p class="hero-description">@companyInfo.Description</p>
+				<div class="hero-actions">
+					<a class="button button-accent" href="#contact">@Text("لنبدأ مشروعك", "Start a project") <span>↗</span></a>
+					<a class="text-link" href="#services">@Text("اكتشف خدماتنا", "Explore our services") <span>↓</span></a>
+				</div>
+			</div>
+			<div class="hero-art" aria-hidden="true">
+				<div class="art-orbit orbit-one"></div>
+				<div class="art-orbit orbit-two"></div>
+				<div class="art-core">T<span>+</span></div>
+				<div class="art-label label-top">DIGITAL<br />CRAFT</div>
+				<div class="art-label label-bottom">IDEAS<br />IN MOTION</div>
+			</div>
+			<div class="scroll-note"><span></span>@Text("مرر للاستكشاف", "Scroll to explore")</div>
+		</section>
+
+		<section id="story" class="story-section content-section">
+			<div class="section-kicker">@Text("رؤيتنا", "Our vision")</div>
+			<div class="story-grid">
+				<h2>@companyInfo.Vision</h2>
+				<div class="story-copy">
+					<p>@Text("نحوّل الأفكار الطموحة إلى تجارب رقمية واضحة، مؤثرة، ومصممة لتبقى.", "We turn ambitious ideas into clear, meaningful digital experiences built to last.")</p>
+					<div class="signature">Tomorrow <i>✳</i> Technology</div>
+				</div>
+			</div>
+		</section>
+
+		<section id="services" class="services-section content-section">
+			<div class="section-heading">
+				<div class="section-kicker">@Text("ما نقدمه", "What we do")</div>
+				<h2>@(IsArabic ? "أفكار كبيرة،" : "Big ideas,")<br />@(IsArabic ? "نتائج ملموسة." : "real results.")</h2>
+			</div>
+			@if (services.Count > 0)
+			{
+				<div class="slider-toolbar"><span>@Text("اسحب للاستكشاف", "Drag to explore")</span><div class="slider-controls"><button type="button" aria-label="Previous" @onclick="() => SlideAsync(servicesSlider, -1)">←</button><button type="button" aria-label="Next" @onclick="() => SlideAsync(servicesSlider, 1)">→</button></div></div>
+				<div class="service-planet-scene">
+					<div class="service-planet" aria-hidden="true"><span>T</span><small>@Text("نصنع المستقبل", "BUILDING TOMORROW")</small></div>
+					<div class="service-orbit orbit-inner" aria-hidden="true"></div>
+					<div class="service-orbit orbit-outer" aria-hidden="true"></div>
+					<div @ref="servicesSlider" class="service-grid slider-track" data-autoplay="true" data-direction="@(IsArabic ? "rtl" : "ltr")">
+					@foreach (var (service, index) in services.Select((item, index) => (item, index)))
+					{
+						<article class="service-card">
+@* 							<div class="service-number">0@(index + 1)</div>
+ *@							<div class="service-icon" title="@service.Icon" aria-label="@service.Icon">@GetServiceIcon(service.Icon)</div>
+							<h3>@service.Title</h3>
+							<p>@service.Description</p>
+						</article>
+					}
+					</div>
+				</div>
+			}
+		</section>
+
+		<section class="mission-section content-section">
+			<div class="mission-symbol">✳</div>
+			<div>
+				<div class="section-kicker">@Text("التزامنا", "Our mission")</div>
+				<h2>@companyInfo.Mission</h2>
+			</div>
+		</section>
+
+		<section id="team" class="team-section content-section">
+			<div class="section-heading">
+				<div class="section-kicker">@Text("فريقنا", "Our team")</div>
+				<h2>@(IsArabic ? "العقول التي" : "The minds")<br />@(IsArabic ? "تحرك أفكارنا." : "behind the ideas.")</h2>
+			</div>
+			@if (teamMembers.Count > 0)
+			{
+				<div class="slider-toolbar"><span>@Text("اسحب للاستكشاف", "Drag to explore")</span><div class="slider-controls"><button type="button" aria-label="Previous" @onclick="() => SlideAsync(teamSlider, -1)">←</button><button type="button" aria-label="Next" @onclick="() => SlideAsync(teamSlider, 1)">→</button></div></div>
+				<div @ref="teamSlider" class="team-grid slider-track" data-autoplay="true" data-direction="@(IsArabic ? "rtl" : "ltr")">
+					@foreach (var member in teamMembers)
+					{
+						<article class="team-card">
+							<div class="team-photo-wrap">
+								<img src="@member.ImageUrl" alt="@member.Name" class="team-photo" />
+
+							</div>
+							<h3>@member.Name</h3>
+							<p class="team-role">@member.Role</p>
+							<p class="team-bio">@member.Bio</p>
+						</article>
+					}
+				</div>
+			}
+		</section>
+
+		<section id="contact" class="contact-section">
+			<div class="contact-heading">
+				<p class="eyebrow"><span></span>@Text("هل لديك فكرة؟", "HAVE AN IDEA?")</p>
+				<h2>@(IsArabic ? "لنصنع شيئًا" : "Let's make something")<br />@(IsArabic ? "يستحق الانتباه." : "worth noticing.")</h2>
+				<p class="contact-intro">@Text("أخبرنا عن مشروعك وسيتواصل معك فريقنا قريبًا.", "Tell us about your project and our team will get back to you soon.")</p>
+			</div>
+			<EditForm Model="contactForm" FormName="contact-message" OnValidSubmit="SubmitContactAsync" class="contact-form">
+				<DataAnnotationsValidator />
+				<div class="form-row">
+					<div class="form-field">
+						<label for="contact-name">@Text("الاسم", "Name")</label>
+						<InputText id="contact-name" @bind-Value="contactForm.Name" placeholder="@Text("اسمك الكامل", "Your full name")" />
+						<ValidationMessage For="@(() => contactForm.Name)" />
+					</div>
+					<div class="form-field">
+						<label for="contact-email">@Text("البريد الإلكتروني", "Email")</label>
+						<InputText id="contact-email" type="email" @bind-Value="contactForm.Email" placeholder="hello@example.com" />
+						<ValidationMessage For="@(() => contactForm.Email)" />
+					</div>
+				</div>
+				<div class="form-field">
+					<label for="contact-subject">@Text("الموضوع", "Subject")</label>
+					<InputText id="contact-subject" @bind-Value="contactForm.Subject" placeholder="@Text("كيف يمكننا مساعدتك؟", "How can we help?")" />
+					<ValidationMessage For="@(() => contactForm.Subject)" />
+				</div>
+				<div class="form-field">
+					<label for="contact-message">@Text("رسالتك", "Your message")</label>
+					<InputTextArea id="contact-message" @bind-Value="contactForm.Message" rows="4" placeholder="@Text("اكتب رسالتك هنا...", "Write your message here...")" />
+					<ValidationMessage For="@(() => contactForm.Message)" />
+				</div>
+				<button class="contact-submit" type="submit" disabled="@isSubmitting">
+					@(isSubmitting ? Text("جار الإرسال...", "Sending...") : Text("إرسال الرسالة", "Send message")) <span>↗</span>
+				</button>
+				@if (!string.IsNullOrWhiteSpace(contactStatus))
+				{
+					<p class="contact-status @(contactSucceeded ? "success" : "failure")">@contactStatus</p>
+				}
+			</EditForm>
+		</section>
+	}
+
+	<footer class="site-footer">
+		<span>© @DateTime.Now.Year @(companyInfo?.Name ?? (IsArabic ? "تقنية الغد" : "Tomorrow Technology"))</span>
+		<span>@Text("نبني المستقبل، اليوم.", "Building tomorrow, today.")</span>
+	</footer>
+</div>
+
+@code {
+	private CompanyInfoResponseDto? companyInfo;
+	private IReadOnlyList<ServiceResponseDto> services = [];
+	private IReadOnlyList<TeamMemberResponseDto> teamMembers = [];
+	private ContactFormModel contactForm = new();
+	private string? contactStatus;
+	private bool contactSucceeded;
+	private bool isSubmitting;
+	private string selectedLanguage = "ar";
+	private bool isLoading = true;
+	private ElementReference servicesSlider;
+	private ElementReference teamSlider;
+
+	private bool IsArabic => selectedLanguage == "ar";
+
+	protected override Task OnInitializedAsync() => LoadContentAsync();
+
+	private async Task LoadContentAsync()
+	{
+		isLoading = true;
+		companyInfo = await CompanyApiClient.GetCompanyInfoAsync(selectedLanguage);
+		services = await CompanyApiClient.GetServicesAsync(selectedLanguage);
+		teamMembers = await CompanyApiClient.GetTeamMembersAsync(selectedLanguage);
+		isLoading = false;
+	}
+
+	private async Task ToggleLanguage()
+	{
+		selectedLanguage = IsArabic ? "en" : "ar";
+		await LoadContentAsync();
+	}
+
+	private async Task SubmitContactAsync()
+	{
+		isSubmitting = true;
+		contactStatus = null;
+
+		var response = await CompanyApiClient.SendContactMessageAsync(
+			new CreateContactMessageDto(
+				contactForm.Name,
+				contactForm.Email,
+				contactForm.Subject,
+				contactForm.Message));
+
+		contactSucceeded = response is not null;
+		contactStatus = contactSucceeded
+			? Text("تم استلام رسالتك بنجاح. سنتواصل معك قريبًا.", "Your message was received. We will be in touch soon.")
+			: Text("تعذر إرسال الرسالة. حاول مرة أخرى.", "We could not send your message. Please try again.");
+
+		if (contactSucceeded)
+			contactForm = new();
+
+		isSubmitting = false;
+	}
+
+	private string Text(string arabic, string english)
+		=> IsArabic ? arabic : english;
+
+	private static string GetServiceIcon(string? icon)
+	=> icon?.Trim().ToLowerInvariant() switch
+	{
+		"web-icon" or "web" or "website" => "🌐",
+		"mobile-icon" or "mobile" or "app" => "📱",
+		"design-icon" or "design" => "🎨",
+		"cloud-icon" or "cloud" => "☁️",
+		"database-icon" or "database" => "🗄️",
+		"security-icon" or "security" => "🔒",
+		"marketing-icon" or "marketing" => "📣",
+		_ => "✨"
+	};
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (companyInfo is not null)
+			await JS.InvokeVoidAsync("companyProfile.startSliders");
+	}
+
+	private Task SlideAsync(ElementReference slider, int direction)
+		=> JS.InvokeVoidAsync("companyProfile.scrollSlider", slider, direction).AsTask();
+
+	private sealed class ContactFormModel
+	{
+		[Required] public string Name { get; set; } = string.Empty;
+		[Required, EmailAddress] public string Email { get; set; } = string.Empty;
+		[Required] public string Subject { get; set; } = string.Empty;
+		[Required] public string Message { get; set; } = string.Empty;
+	}
+}

@@ -1,0 +1,75 @@
+@using System.ComponentModel.DataAnnotations
+@using CompanyProfile.Shared.DTOs
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="service-editor-backdrop" @onclick="CloseRequested">
+    <section class="service-editor" @onclick:stopPropagation="true">
+        <div class="service-editor-heading"><div><p class="admin-eyebrow">TEAM EDITOR</p><h2>@(MemberId.HasValue ? "Add team translation" : "Add team member")</h2></div><button class="admin-close-button" type="button" @onclick="CloseRequested">×</button></div>
+        <EditForm Model="form" FormName="team-editor" OnValidSubmit="SubmitRequested" class="admin-form">
+            <DataAnnotationsValidator />
+            <div class="admin-form-grid">
+                @if (IsImageEdit)
+                {
+                    <div class="admin-field admin-field-wide"><label>New profile image</label><InputFile OnChange="OnFileSelected" accept="image/png,image/jpeg,image/webp" /><small>JPG, PNG or WEBP, maximum 5 MB.</small></div>
+                }
+                else if (MemberId.HasValue)
+                {
+                    <div class="admin-field admin-field-wide"><small>This translation will be added to team member #@MemberId.</small></div>
+                }
+                else
+                {
+                    <div class="admin-field admin-field-wide"><label>Profile image</label><InputFile OnChange="OnFileSelected" accept="image/png,image/jpeg,image/webp" /><small>JPG, PNG or WEBP, maximum 5 MB.</small><ValidationMessage For="@(() => form.Image)" /></div>
+                }
+                @if (!IsImageEdit)
+                {
+                    <div class="admin-field"><label>Name</label><InputText @bind-Value="form.Name" /><ValidationMessage For="@(() => form.Name)" /></div>
+                    <div class="admin-field"><label>Role</label><InputText @bind-Value="form.Role" /><ValidationMessage For="@(() => form.Role)" /></div>
+                    <div class="admin-field admin-field-wide"><label>Bio</label><InputTextArea @bind-Value="form.Bio" rows="4" /><ValidationMessage For="@(() => form.Bio)" /></div>
+                }
+            </div>
+            @if (SelectedImage is not null)
+            {
+                <p class="admin-file-name">Selected: @SelectedImage.Name</p>
+            }
+            <div class="admin-inline-actions"><button class="admin-primary-button" type="submit" disabled="@IsSaving">@(IsSaving ? "Saving..." : "Save member") <span>↗</span></button><button class="admin-cancel-button" type="button" @onclick="CloseRequested">Cancel</button></div>
+        </EditForm>
+    </section>
+</div>
+
+@code {
+    [Parameter] public int? MemberId { get; set; }
+    [Parameter] public string Language { get; set; } = "ar";
+    [Parameter] public string InitialName { get; set; } = string.Empty;
+    [Parameter] public string InitialRole { get; set; } = string.Empty;
+    [Parameter] public string InitialBio { get; set; } = string.Empty;
+    [Parameter] public string InitialImageUrl { get; set; } = string.Empty;
+    [Parameter] public bool IsImageEdit { get; set; }
+    [Parameter] public EventCallback<TeamEditorResult> OnSubmit { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public bool IsSaving { get; set; }
+
+    private TeamForm form = new();
+    private string? loadedKey;
+    public IBrowserFile? SelectedImage { get; private set; }
+
+    protected override void OnParametersSet()
+    {
+        var key = $"{MemberId}:{Language}:{InitialName}:{InitialRole}:{InitialBio}:{InitialImageUrl}:{IsImageEdit}";
+        if (loadedKey == key) return;
+        loadedKey = key;
+        form = new TeamForm { Name = InitialName, Role = InitialRole, Bio = InitialBio };
+        SelectedImage = null;
+    }
+
+    private void OnFileSelected(InputFileChangeEventArgs args)
+    {
+        SelectedImage = args.File;
+        form.Image = SelectedImage;
+    }
+
+    private Task SubmitRequested() => OnSubmit.InvokeAsync(new TeamEditorResult(MemberId, Language, form.Name, form.Role, form.Bio, InitialImageUrl, SelectedImage));
+    private Task CloseRequested() => OnClose.InvokeAsync();
+
+    public sealed record TeamEditorResult(int? Id, string Language, string Name, string Role, string Bio, string ImageUrl, IBrowserFile? Image);
+    private sealed class TeamForm { [Required] public string Name { get; set; } = string.Empty; [Required] public string Role { get; set; } = string.Empty; [Required] public string Bio { get; set; } = string.Empty; public IBrowserFile? Image { get; set; } }
+}

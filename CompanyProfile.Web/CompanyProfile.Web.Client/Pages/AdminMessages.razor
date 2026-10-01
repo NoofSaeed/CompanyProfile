@@ -1,0 +1,16 @@
+@page "/admin/messages"
+@layout AdminLayout
+@using CompanyProfile.Shared.DTOs
+@using CompanyProfile.Web.Client.Services
+@inject CompanyApiClient CompanyApiClient
+@inject IJSRuntime JS
+
+<PageTitle>Visitor messages</PageTitle>
+<header class="admin-topbar"><div><h1>Visitor messages</h1></div><a class="admin-view-site" href="/" target="_blank">View website ↗</a></header>
+<section class="admin-panel"><div class="admin-panel-heading"><div><p class="admin-eyebrow">CONTACT FORM</p><h2>All enquiries</h2></div><button class="admin-refresh-button" @onclick="LoadAsync" type="button">Refresh</button></div>@if(items.Count==0){<p class="admin-muted">No visitor messages yet.</p>}else{<div class="admin-message-list">@foreach(var item in items){<article class="admin-message"><div class="admin-message-meta"><strong>@item.Name</strong><a href="mailto:@item.Email">@item.Email</a><time>@item.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</time></div><h3>@item.Subject</h3><p>@item.Message</p><button class="admin-message-delete" @onclick="() => DeleteAsync(item.Id)" type="button">Delete message</button></article>}</div>}@if(message is not null){<p class="admin-status">@message</p>}</section>
+@code {
+    private IReadOnlyList<ContactMessageAdminDto> items=[]; private string? message;
+    protected override Task OnInitializedAsync()=>LoadAsync();
+    private async Task LoadAsync()=>items=await CompanyApiClient.GetContactMessagesAsync();
+    private async Task DeleteAsync(int id){if(!await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this message? This action cannot be undone."))return;if(await CompanyApiClient.DeleteContactMessageAsync(id)){message="Message deleted successfully.";await LoadAsync();}}
+}

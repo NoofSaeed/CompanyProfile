@@ -1,0 +1,22 @@
+@using CompanyProfile.Shared.DTOs
+
+@if (Item is null)
+{
+    <button class="service-language-add" type="button" @onclick="() => OnAdd.InvokeAsync((ServiceId, Language))">+ Add @Language</button>
+}
+else
+{
+    <div class="service-language-cell">
+        <strong>@Item.Title</strong>
+        <small>@Item.Description</small>
+        <button type="button" @onclick="() => OnEdit.InvokeAsync(Item)">Edit</button>
+    </div>
+}
+
+@code {
+    [Parameter] public ServiceResponseDto? Item { get; set; }
+    [Parameter] public int ServiceId { get; set; }
+    [Parameter] public string Language { get; set; } = string.Empty;
+    [Parameter] public EventCallback<(int Id, string Language)> OnAdd { get; set; }
+    [Parameter] public EventCallback<ServiceResponseDto> OnEdit { get; set; }
+}

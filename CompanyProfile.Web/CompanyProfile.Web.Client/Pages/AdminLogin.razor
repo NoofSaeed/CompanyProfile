@@ -1,0 +1,66 @@
+@page "/admin/login"
+@using System.ComponentModel.DataAnnotations
+@using CompanyProfile.Web.Client.Services
+@inject CompanyApiClient CompanyApiClient
+@inject NavigationManager Navigation
+
+<PageTitle>Admin Login</PageTitle>
+
+<div class="admin-auth-page" dir="ltr">
+    <div class="admin-auth-brand">
+        <span class="brand-mark">T</span>
+        <span>Tomorrow Technology</span>
+    </div>
+    <div class="admin-auth-card">
+        <h1>Welcome back</h1>
+        <p class="admin-muted">Sign in to manage your company profile.</p>
+        <EditForm Model="loginForm" FormName="admin-login" OnValidSubmit="LoginAsync" class="admin-form">
+            <DataAnnotationsValidator />
+            <div class="admin-field">
+                <label for="admin-username">Username</label>
+                <InputText id="admin-username" @bind-Value="loginForm.UserName" autocomplete="username" placeholder="admin" />
+                <ValidationMessage For="@(() => loginForm.UserName)" />
+            </div>
+            <div class="admin-field">
+                <label for="admin-password">Password</label>
+                <InputText id="admin-password" type="password" @bind-Value="loginForm.Password" autocomplete="current-password" placeholder="••••••••" />
+                <ValidationMessage For="@(() => loginForm.Password)" />
+            </div>
+            <button class="admin-primary-button" type="submit" disabled="@isLoading">
+                @(isLoading ? "Signing in..." : "Sign in") <span>↗</span>
+            </button>
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <p class="admin-error">@errorMessage</p>
+            }
+        </EditForm>
+        <a class="admin-back-link" href="/">← Back to website</a>
+    </div>
+</div>
+
+@code {
+    private readonly LoginForm loginForm = new();
+    private bool isLoading;
+    private string? errorMessage;
+
+    private async Task LoginAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        if (await CompanyApiClient.LoginAsync(loginForm.UserName, loginForm.Password))
+        {
+            Navigation.NavigateTo("/admin", forceLoad: true);
+            return;
+        }
+
+        errorMessage = "Invalid username or password.";
+        isLoading = false;
+    }
+
+    private sealed class LoginForm
+    {
+        [Required] public string UserName { get; set; } = string.Empty;
+        [Required] public string Password { get; set; } = string.Empty;
+    }
+}

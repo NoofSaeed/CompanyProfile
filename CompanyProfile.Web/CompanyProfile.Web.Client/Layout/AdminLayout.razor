@@ -1,0 +1,32 @@
+@inherits LayoutComponentBase
+@using CompanyProfile.Web.Client.Services
+@inject CompanyApiClient CompanyApiClient
+@inject NavigationManager Navigation
+
+<div class="admin-page" dir="ltr">
+    <aside class="admin-sidebar">
+        <a class="admin-brand" href="/">
+            <span class="brand-mark">T</span>
+            <span>Control Center</span>
+        </a>
+        <nav class="admin-nav" aria-label="Admin navigation">
+            <NavLink href="/admin" Match="NavLinkMatch.All">Overview</NavLink>
+            <NavLink href="/admin/company">Company information</NavLink>
+            <NavLink href="/admin/services">Services</NavLink>
+            <NavLink href="/admin/team">Team members</NavLink>
+            <NavLink href="/admin/messages">Visitor messages</NavLink>
+        </nav>
+        <button class="admin-logout" type="button" @onclick="LogoutAsync">Log out <span>↗</span></button>
+    </aside>
+    <main class="admin-main">
+        @Body
+    </main>
+</div>
+
+@code {
+    private async Task LogoutAsync()
+    {
+        await CompanyApiClient.LogoutAsync();
+        Navigation.NavigateTo("/admin/login", forceLoad: true);
+    }
+}

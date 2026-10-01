@@ -1,0 +1,19 @@
+@page "/admin"
+@layout AdminLayout
+
+<PageTitle>Control Center</PageTitle>
+
+<header class="admin-topbar">
+    <div>
+        <p class="admin-eyebrow">DASHBOARD</p>
+        <h1>Welcome</h1>
+    </div>
+    <a class="admin-view-site" href="/" target="_blank">View website ↗</a>
+</header>
+
+<section class="admin-overview-grid">
+    <NavLink class="admin-overview-card" href="/admin/company"><strong>Company information</strong><small>Edit the story, vision and mission.</small></NavLink>
+    <NavLink class="admin-overview-card" href="/admin/services"><strong>Services</strong><small>Add, edit or remove services.</small></NavLink>
+    <NavLink class="admin-overview-card" href="/admin/team"><strong>Team members</strong><small>Manage the people behind the work.</small></NavLink>
+    <NavLink class="admin-overview-card" href="/admin/messages"><strong>Visitor messages</strong><small>Read and manage enquiries.</small></NavLink>
+</section>

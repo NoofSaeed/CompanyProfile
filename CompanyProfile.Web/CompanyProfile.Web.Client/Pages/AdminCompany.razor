@@ -1,0 +1,31 @@
+@page "/admin/company"
+@layout AdminLayout
+@using System.ComponentModel.DataAnnotations
+@using CompanyProfile.Shared.DTOs
+@using CompanyProfile.Web.Client.Services
+@inject CompanyApiClient CompanyApiClient
+@inject NavigationManager Navigation
+
+<PageTitle>Company information</PageTitle>
+<header class="admin-topbar"><div><h1>Company information</h1></div><a class="admin-view-site" href="/" target="_blank">View website ↗</a></header>
+@if (isLoading)
+{ <div class="admin-loading">Loading company information...</div> }
+else if (!authorized)
+{ <section class="admin-panel admin-locked"><h2>Your session has expired.</h2><button class="admin-primary-button" @onclick="GoToLogin">Sign in again ↗</button></section> }
+else
+{
+<section class="admin-panel">
+    <div class="admin-panel-heading"><div><p class="admin-eyebrow">EDIT TRANSLATION</p><h2>Content by language</h2></div><div class="admin-language-tabs"><button class="@(language == "ar" ? "active" : "")" @onclick='() => SelectLanguageAsync("ar")' type="button">Arabic</button><button class="@(language == "en" ? "active" : "")" @onclick='() => SelectLanguageAsync("en")' type="button">English</button></div></div>
+    <EditForm Model="form" FormName="company-information" OnValidSubmit="SaveAsync" class="admin-form"><DataAnnotationsValidator /><div class="admin-form-grid"><div class="admin-field"><label>Name</label><InputText @bind-Value="form.Name" /><ValidationMessage For="@(() => form.Name)" /></div><div class="admin-field admin-field-wide"><label>Description</label><InputTextArea @bind-Value="form.Description" rows="3" /><ValidationMessage For="@(() => form.Description)" /></div><div class="admin-field"><label>Vision</label><InputTextArea @bind-Value="form.Vision" rows="3" /><ValidationMessage For="@(() => form.Vision)" /></div><div class="admin-field"><label>Mission</label><InputTextArea @bind-Value="form.Mission" rows="3" /><ValidationMessage For="@(() => form.Mission)" /></div></div><button class="admin-primary-button" type="submit" disabled="@saving">@(saving ? "Saving..." : "Save changes") <span>↗</span></button></EditForm>
+    @if (message is not null) { <p class="admin-status">@message</p> }
+</section>
+}
+@code {
+    private string language = "ar"; private bool isLoading = true; private bool authorized; private bool saving; private string? message; private CompanyForm form = new(); private CompanyInfoWithTranslationsResponseDto? allInfo;
+    protected override async Task OnInitializedAsync() { allInfo = await CompanyApiClient.GetAllCompanyInfoAsync(); authorized = allInfo is not null; isLoading = false; if (allInfo is not null) SetForm(); }
+    private async Task SelectLanguageAsync(string value) { language = value; allInfo = await CompanyApiClient.GetAllCompanyInfoAsync(); if (allInfo is null) { authorized = false; return; } SetForm(); }
+    private void SetForm() { var item = allInfo?.Translations.FirstOrDefault(x => x.Language == language); if (item is null) return; form = new() { Name = item.Name, Description = item.Description, Vision = item.Vision, Mission = item.Mission }; }
+    private async Task SaveAsync() { saving = true; var result = await CompanyApiClient.UpdateCompanyInfoAsync(language, new UpdateCompanyInfoDto(form.Name, form.Description, form.Vision, form.Mission)); message = result is null ? "Unable to save. Please sign in again." : "Company information saved successfully."; saving = false; }
+    private void GoToLogin() => Navigation.NavigateTo("/admin/login", forceLoad: true);
+    private sealed class CompanyForm { [Required] public string Name { get; set; } = ""; [Required] public string Description { get; set; } = ""; [Required] public string Vision { get; set; } = ""; [Required] public string Mission { get; set; } = ""; }
+}

@@ -1,0 +1,131 @@
+@using System.ComponentModel.DataAnnotations
+@using CompanyProfile.Shared.DTOs
+
+<div class="service-editor-backdrop" @onclick="CloseRequested">
+    <section class="service-editor" @onclick:stopPropagation="true">
+        <div class="service-editor-heading">
+            <div>
+                <p class="admin-eyebrow">SERVICE EDITOR</p>
+                <h2>@(IsEdit ? "Edit service translation" : ServiceId.HasValue ? "Add service translation" : "Add service")</h2>
+            </div>
+            <button class="admin-close-button" type="button" @onclick="CloseRequested">×</button>
+        </div>
+
+        <EditForm Model="form" FormName="service-editor" OnValidSubmit="SubmitRequested" class="admin-form">
+            <DataAnnotationsValidator />
+            <div class="admin-form-grid">
+                @if (!ServiceId.HasValue)
+                {
+                    <div class="admin-field">
+                        <label>Service ID</label>
+                        <InputNumber @bind-Value="form.Id" />
+                        <small>Leave empty when creating a new service.</small>
+                    </div>
+                }
+                @if (ServiceId.HasValue)
+                {
+                    <div class="admin-field admin-field-wide">
+                        <small>This translation will be added to service #@ServiceId.</small>
+                    </div>
+                }
+                @if (!IsIconEdit)
+                {
+                    <div class="admin-field">
+                        <label>Title</label>
+                        <InputText @bind-Value="form.Title" />
+                        <ValidationMessage For="@(() => form.Title)" />
+                    </div>
+                }
+                @if (!ServiceId.HasValue || IsIconEdit)
+                {
+                    <div class="admin-field">
+                        <label>Icon</label>
+                        <InputText @bind-Value="form.Icon" />
+                        <ValidationMessage For="@(() => form.Icon)" />
+                    </div>
+                }
+                @if (!IsIconEdit)
+                {
+                    <div class="admin-field admin-field-wide">
+                        <label>Description</label>
+                        <InputTextArea @bind-Value="form.Description" rows="4" />
+                        <ValidationMessage For="@(() => form.Description)" />
+                    </div>
+                }
+            </div>
+            <div class="admin-inline-actions">
+                <button class="admin-primary-button" type="submit" disabled="@IsSaving">@(IsSaving ? "Saving..." : "Save service") <span>↗</span></button>
+                <button class="admin-cancel-button" type="button" @onclick="CloseRequested">Cancel</button>
+            </div>
+        </EditForm>
+    </section>
+</div>
+
+@code {
+    [Parameter] public int? ServiceId { get; set; }
+    [Parameter] public string Language { get; set; } = "ar";
+    [Parameter] public string InitialTitle { get; set; } = string.Empty;
+    [Parameter] public string InitialDescription { get; set; } = string.Empty;
+    [Parameter] public string InitialIcon { get; set; } = string.Empty;
+    [Parameter] public bool IsIconEdit { get; set; }
+    [Parameter] public bool IsEdit { get; set; }
+    [Parameter] public EventCallback<ServiceEditorResult> OnSubmit { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public bool IsSaving { get; set; }
+
+    private EditorForm form = new();
+    private string? loadedKey;
+
+    protected override void OnParametersSet()
+    {
+        var key = $"{ServiceId}:{Language}:{InitialTitle}:{InitialDescription}:{InitialIcon}";
+        if (loadedKey == key)
+            return;
+
+        loadedKey = key;
+        form = new EditorForm
+        {
+            Id = ServiceId,
+            Language = Language,
+            Title = InitialTitle,
+            Description = InitialDescription,
+            Icon = InitialIcon
+        };
+    }
+
+    private Task SubmitRequested() => OnSubmit.InvokeAsync(new ServiceEditorResult(
+        form.Id,
+        form.Language,
+        form.Title,
+        form.Description,
+        form.Icon));
+
+    private Task CloseRequested() => OnClose.InvokeAsync();
+
+    public sealed class ServiceEditorResult
+    {
+        public ServiceEditorResult(int? id, string language, string title, string description, string icon)
+        {
+            Id = id;
+            Language = language;
+            Title = title;
+            Description = description;
+            Icon = icon;
+        }
+
+        public int? Id { get; }
+        public string Language { get; }
+        public string Title { get; }
+        public string Description { get; }
+        public string Icon { get; }
+    }
+
+    private sealed class EditorForm
+    {
+        public int? Id { get; set; }
+        public string Language { get; set; } = "ar";
+        [Required] public string Title { get; set; } = string.Empty;
+        [Required] public string Description { get; set; } = string.Empty;
+        [Required] public string Icon { get; set; } = string.Empty;
+    }
+}

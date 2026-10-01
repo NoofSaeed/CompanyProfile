@@ -5,4 +5,6 @@
   <Project Path="CompanyProfile.Api/CompanyProfile.Api.csproj" />
   <Project Path="CompanyProfile.Infrastructure/CompanyProfile.Infrastructure.csproj" />
   <Project Path="CompanyProfile.Shared/CompanyProfile.Shared.csproj" Id="85315537-0757-4128-bece-c86d1e1999c6" />
+  <Project Path="CompanyProfile.Web/CompanyProfile.Web.Client/CompanyProfile.Web.Client.csproj" Id="12958340-ddde-42b6-8913-17773635ff9f" />
+  <Project Path="CompanyProfile.Web/CompanyProfile.Web/CompanyProfile.Web.csproj" Id="d79f9bde-8ffc-4138-bf9d-f5073b8db594" />
 </Solution>

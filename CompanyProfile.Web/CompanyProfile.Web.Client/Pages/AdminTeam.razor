@@ -1,0 +1,29 @@
+@page "/admin/team"
+@layout AdminLayout
+@using CompanyProfile.Shared.DTOs
+@using CompanyProfile.Web.Client.Components.Admin
+@using CompanyProfile.Web.Client.Services
+@inject CompanyApiClient CompanyApiClient
+@inject IJSRuntime JS
+
+<PageTitle>Team members</PageTitle>
+<header class="admin-topbar"><div><h1>Team members</h1></div><a class="admin-view-site" href="/" target="_blank">View website ↗</a></header>
+<section class="admin-panel">
+    <div class="admin-panel-heading"><div><p class="admin-eyebrow">TEAM DIRECTORY</p><h2>All team members</h2></div><button class="admin-primary-button" type="button" @onclick="OpenCreate">Add team member <span>+</span></button></div>
+    <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>ID</th><th>Photo</th><th>Arabic</th><th>English</th><th>Actions</th></tr></thead><tbody>@foreach(var row in rows){<tr><td class="table-id">@row.Id</td><td><div class="team-admin-photo"><img class="admin-record-avatar" src="@row.ImageUrl" alt="" /><button class="service-icon-edit" type="button" @onclick="() => OpenImageEdit(row)">Edit photo</button></div></td><td><TeamCell Item="row.Arabic" Language="ar" MemberId="row.Id" OnAdd="args => OpenTranslation(args.Id, args.Language)" OnEdit="item => OpenEdit(item)" /></td><td><TeamCell Item="row.English" Language="en" MemberId="row.Id" OnAdd="args => OpenTranslation(args.Id, args.Language)" OnEdit="item => OpenEdit(item)" /></td><td><button class="admin-table-delete" type="button" @onclick="() => DeleteAsync(row.Id)">Delete</button></td></tr>}</tbody></table>@if(rows.Count==0){<p class="admin-muted table-empty">No team members found.</p>}</div>
+</section>
+@if(editor is not null){<TeamEditor MemberId="@editor.Id" Language="@editor.Language" InitialName="@editor.Name" InitialRole="@editor.Role" InitialBio="@editor.Bio" InitialImageUrl="@editor.ImageUrl" IsImageEdit="@editor.IsImageEdit" IsSaving="@isSaving" OnSubmit="SaveEditorAsync" OnClose="CloseEditor" />}
+@code {
+    private List<TeamRow> rows=[]; private EditorState? editor; private bool isSaving;
+    protected override Task OnInitializedAsync()=>LoadAsync();
+    private async Task LoadAsync(){var ar=await CompanyApiClient.GetTeamMembersAsync("ar");var en=await CompanyApiClient.GetTeamMembersAsync("en");rows=ar.Select(x=>new TeamRow(x.Id,x.ImageUrl,x,en.FirstOrDefault(y=>y.Id==x.Id))).Concat(en.Where(x=>ar.All(y=>y.Id!=x.Id)).Select(x=>new TeamRow(x.Id,x.ImageUrl,null,x))).OrderBy(x=>x.Id).ToList();}
+    private void OpenCreate()=>editor=new EditorState(null,"ar","","","","");
+    private void OpenTranslation(int id,string language)=>editor=new EditorState(id,language,"","","",rows.First(x=>x.Id==id).ImageUrl);
+    private void OpenEdit(TeamMemberResponseDto item)=>editor=new EditorState(item.Id,item.Language,item.Name,item.Role,item.Bio,item.ImageUrl,true);
+    private void OpenImageEdit(TeamRow row){var item=row.Arabic??row.English;if(item is not null)editor=new EditorState(row.Id,item.Language,item.Name,item.Role,item.Bio,row.ImageUrl,false,true);}
+    private async Task SaveEditorAsync(TeamEditor.TeamEditorResult result){isSaving=true;TeamMemberResponseDto? saved;if(result.Id.HasValue && editor?.IsImageEdit == true){saved=result.Image is null?null:await CompanyApiClient.UpdateTeamMemberWithImageAsync(result.Id.Value,result.Language,result.Name,result.Role,result.Bio,result.Image);}else if(result.Id.HasValue && editor?.IsEdit == true){saved=result.Image is null?await CompanyApiClient.UpdateTeamMemberAsync(result.Id.Value,result.Language,new UpdateTeamMemberAdminDto(result.ImageUrl,result.Name,result.Role,result.Bio)):await CompanyApiClient.UpdateTeamMemberWithImageAsync(result.Id.Value,result.Language,result.Name,result.Role,result.Bio,result.Image);}else if(result.Id.HasValue){saved=await CompanyApiClient.AddTeamMemberTranslationAsync(result.Id.Value,result.Language,new CreateTeamMemberTranslationDto(result.Name,result.Role,result.Bio));}else{saved=result.Image is null?null:await CompanyApiClient.AddTeamMemberWithImageAsync(result.Language,result.Name,result.Role,result.Bio,result.Image);}isSaving=false;if(saved is not null){editor=null;await LoadAsync();}}
+    private Task CloseEditor(){editor=null;return Task.CompletedTask;}
+    private async Task DeleteAsync(int id){if(!await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this team member? This action cannot be undone."))return;if(await CompanyApiClient.DeleteTeamMemberAsync(id))await LoadAsync();}
+    private sealed record TeamRow(int Id,string ImageUrl,TeamMemberResponseDto? Arabic,TeamMemberResponseDto? English);
+    private sealed record EditorState(int? Id,string Language,string Name,string Role,string Bio,string ImageUrl,bool IsEdit=false,bool IsImageEdit=false);
+}
