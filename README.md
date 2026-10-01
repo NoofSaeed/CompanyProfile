@@ -201,7 +201,7 @@ Make sure the API is running and that the API base URL configured in the Blazor 
 ![Home](screenshots/website.png)
 
 ### Services
-![Services](screenshots/services.png)
+![Services](screenshots/Services.png)
 
 ### Admin
 ![Admin](screenshots/dashboard.png)
