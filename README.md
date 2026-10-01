@@ -122,8 +122,8 @@ The Blazor Web App integrates with the API authentication flow through the sessi
 
 The application supports:
 
-* 🇸🇦 Arabic
-* 🇬🇧 English
+* ar Arabic
+* en English
 
 Localization is used for both company content and validation messages.
 
@@ -193,19 +193,18 @@ Make sure the API is running and that the API base URL configured in the Blazor 
 
 ---
 
-## 📌 Project Goals
+## Screenshots
+### API
+![Admin](screenshots/scalar.png)
 
-The project is being built as a practical full-stack .NET application with an emphasis on:
+### Website
+![Home](screenshots/website.png)
 
-* Clean and maintainable architecture
-* Secure authentication and session management
-* API-first communicationMO
-* Reusable components
-* Localization
-* Simple project structure
-* Incremental development
+### Services
+![Services](screenshots/services.png)
 
----
+### Admin
+![Admin](screenshots/dashboard.png)
 
 ## ⭐ Feedback
 
