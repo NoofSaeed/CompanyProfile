@@ -27,7 +27,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
-              .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
     });
 });
 
@@ -140,6 +141,8 @@ using (var scope = app.Services.CreateScope())
 app.UseRequestLocalization();
 
 app.UseCors("AllowFrontend");
+
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
