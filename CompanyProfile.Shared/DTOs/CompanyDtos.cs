@@ -277,6 +277,34 @@ public record UpdateTeamMemberTranslationDto(
         Name = "Bio")]
     string Bio);
 
+public record TeamMemberResponseDto(
+    int Id,
+    string ImageUrl,
+    string Language,
+    string Name,
+    string Role,
+    string Bio);
+
+public record CreateTeamMemberAdminDto(
+    string ImageUrl,
+    string Name,
+    string Role,
+    string Bio);
+
+public record UpdateTeamMemberAdminDto(
+    string ImageUrl,
+    string Name,
+    string Role,
+    string Bio);
+
+public record ContactMessageAdminDto(
+    int Id,
+    string Name,
+    string Email,
+    string Subject,
+    string Message,
+    DateTime CreatedAt);
+
 public record CreateContactMessageDto(
 
     [property: Required(

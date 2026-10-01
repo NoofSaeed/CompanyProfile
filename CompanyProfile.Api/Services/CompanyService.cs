@@ -40,7 +40,12 @@ public class CompanyService
         return await _db.ServiceTranslations
             .AsNoTracking()
             .Where(t => t.Language == language)
-            .ProjectToType<ServiceResponseDto>()
+            .Select(t => new ServiceResponseDto(
+                t.ServiceId,
+                t.Language,
+                t.Title,
+                t.Description,
+                t.Service.Icon))
             .ToListAsync();
     }
 
@@ -49,8 +54,119 @@ public class CompanyService
         return await _db.ServiceTranslations
             .AsNoTracking()
             .Where(t => t.ServiceId == id && t.Language == language)
-            .ProjectToType<ServiceResponseDto>()
+            .Select(t => new ServiceResponseDto(
+                t.ServiceId,
+                t.Language,
+                t.Title,
+                t.Description,
+                t.Service.Icon))
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<List<TeamMemberResponseDto>> GetTeamMembersAsync(string language)
+    {
+        return await _db.TeamMemberTranslations
+            .AsNoTracking()
+            .Where(t => t.Language == language)
+            .Select(t => new TeamMemberResponseDto(
+                t.TeamMemberId,
+                t.TeamMember.ImageUrl,
+                t.Language,
+                t.Name,
+                t.Role,
+                t.Bio))
+            .ToListAsync();
+    }
+
+    public async Task<TeamMemberResponseDto> AddTeamMemberAsync(
+        string language,
+        CreateTeamMemberAdminDto dto)
+    {
+        var member = new TeamMember
+        {
+            ImageUrl = dto.ImageUrl,
+            Translations =
+            [
+                new TeamMemberTranslation
+                {
+                    Language = language,
+                    Name = dto.Name,
+                    Role = dto.Role,
+                    Bio = dto.Bio
+                }
+            ]
+        };
+
+        _db.Team.Add(member);
+        await _db.SaveChangesAsync();
+
+        return new TeamMemberResponseDto(member.Id, member.ImageUrl, language, dto.Name, dto.Role, dto.Bio);
+    }
+
+    public async Task<TeamMemberResponseDto?> UpdateTeamMemberAsync(
+        int id,
+        string language,
+        UpdateTeamMemberAdminDto dto)
+    {
+        var member = await _db.Team
+            .Include(x => x.Translations)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (member is null)
+            return null;
+
+        member.ImageUrl = dto.ImageUrl;
+        var translation = member.Translations.FirstOrDefault(x => x.Language == language);
+
+        if (translation is null)
+        {
+            translation = new TeamMemberTranslation { TeamMemberId = id, Language = language };
+            member.Translations.Add(translation);
+        }
+
+        translation.Name = dto.Name;
+        translation.Role = dto.Role;
+        translation.Bio = dto.Bio;
+        await _db.SaveChangesAsync();
+
+        return new TeamMemberResponseDto(id, member.ImageUrl, language, translation.Name, translation.Role, translation.Bio);
+    }
+
+    public async Task<TeamMemberResponseDto?> AddTeamMemberTranslationAsync(
+        int id,
+        string language,
+        CreateTeamMemberTranslationDto dto)
+    {
+        var member = await _db.Team
+            .Include(x => x.Translations)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (member is null || member.Translations.Any(x => x.Language == language))
+            return null;
+
+        var translation = new TeamMemberTranslation
+        {
+            TeamMemberId = id,
+            Language = language,
+            Name = dto.Name,
+            Role = dto.Role,
+            Bio = dto.Bio
+        };
+
+        member.Translations.Add(translation);
+        await _db.SaveChangesAsync();
+        return new TeamMemberResponseDto(id, member.ImageUrl, language, dto.Name, dto.Role, dto.Bio);
+    }
+
+    public async Task<bool> DeleteTeamMemberAsync(int id)
+    {
+        var member = await _db.Team.FirstOrDefaultAsync(x => x.Id == id);
+        if (member is null)
+            return false;
+
+        _db.Team.Remove(member);
+        await _db.SaveChangesAsync();
+        return true;
     }
 
     public async Task<ServiceWithTranslationsResponseDto?> GetServiceByIdWithAllTransAsync(int id)
@@ -71,6 +187,26 @@ public class CompanyService
         await _db.SaveChangesAsync();
 
         return new ContactMessageResponseDto(dbMessage.Id, "تم استلام رسالتك.", dbMessage.CreatedAt);
+    }
+
+    public async Task<List<ContactMessageAdminDto>> GetContactMessagesAsync()
+    {
+        return await _db.ContactMessages
+            .AsNoTracking()
+            .OrderByDescending(x => x.CreatedAt)
+            .Select(x => new ContactMessageAdminDto(x.Id, x.Name, x.Email, x.Subject, x.Message, x.CreatedAt))
+            .ToListAsync();
+    }
+
+    public async Task<bool> DeleteContactMessageAsync(int id)
+    {
+        var message = await _db.ContactMessages.FirstOrDefaultAsync(x => x.Id == id);
+        if (message is null)
+            return false;
+
+        _db.ContactMessages.Remove(message);
+        await _db.SaveChangesAsync();
+        return true;
     }
 
     public async Task<CompanyInfoResponseDto?> UpdateCompanyInfoAsync(string language, UpdateCompanyInfoDto dto)
@@ -149,6 +285,32 @@ public class CompanyService
         await _db.SaveChangesAsync();
 
         return new ServiceResponseDto(service.Id, language, translation.Title, translation.Description, service.Icon);
+    }
+
+    public async Task<ServiceResponseDto?> AddServiceTranslationAsync(
+        int id,
+        string language,
+        CreateServiceTranslationDto dto)
+    {
+        var service = await _db.Services
+            .Include(x => x.Translations)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (service is null || service.Translations.Any(x => x.Language == language))
+            return null;
+
+        var translation = new ServiceTranslation
+        {
+            ServiceId = id,
+            Language = language,
+            Title = dto.Title,
+            Description = dto.Description
+        };
+
+        service.Translations.Add(translation);
+        await _db.SaveChangesAsync();
+
+        return new ServiceResponseDto(id, language, translation.Title, translation.Description, service.Icon);
     }
 
     public async Task<bool> DeleteServiceAsync(int id)

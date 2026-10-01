@@ -12,6 +12,7 @@ public static class CompanyProfileSeeder
 
         await SeedCompanyInfoAsync(dbContext);
         await SeedServicesAsync(dbContext);
+        await SeedTeamAsync(dbContext);
     }
 
     private static async Task SeedCompanyInfoAsync(AppDbContext dbContext)
@@ -92,6 +93,46 @@ public static class CompanyProfileSeeder
                         Title = "Mobile App Development",
                         Description = "Smartphone applications for iOS and Android"
                     }
+                ]
+            });
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    private static async Task SeedTeamAsync(AppDbContext dbContext)
+    {
+        if (await dbContext.Team.AnyAsync())
+            return;
+
+        dbContext.Team.AddRange(
+            new TeamMember
+            {
+                Id = 1,
+                ImageUrl = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=700&q=85",
+                Translations =
+                [
+                    new TeamMemberTranslation { Language = "ar", Name = "أحمد العلي", Role = "المدير التنفيذي", Bio = "يقود الرؤية والاستراتيجية لبناء منتجات رقمية ذات أثر." },
+                    new TeamMemberTranslation { Language = "en", Name = "Ahmed Al Ali", Role = "Chief Executive Officer", Bio = "Leads the vision and strategy behind meaningful digital products." }
+                ]
+            },
+            new TeamMember
+            {
+                Id = 2,
+                ImageUrl = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=700&q=85",
+                Translations =
+                [
+                    new TeamMemberTranslation { Language = "ar", Name = "سارة منصور", Role = "قائدة التصميم", Bio = "تحول الأفكار المعقدة إلى تجارب بسيطة وجميلة." },
+                    new TeamMemberTranslation { Language = "en", Name = "Sarah Mansour", Role = "Design Lead", Bio = "Turns complex ideas into simple, beautiful experiences." }
+                ]
+            },
+            new TeamMember
+            {
+                Id = 3,
+                ImageUrl = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=85",
+                Translations =
+                [
+                    new TeamMemberTranslation { Language = "ar", Name = "خالد ناصر", Role = "مهندس برمجيات", Bio = "يبني أنظمة مرنة وسريعة تجعل الطموح قابلًا للتنفيذ." },
+                    new TeamMemberTranslation { Language = "en", Name = "Khaled Nasser", Role = "Software Engineer", Bio = "Builds resilient, fast systems that turn ambition into reality." }
                 ]
             });
 

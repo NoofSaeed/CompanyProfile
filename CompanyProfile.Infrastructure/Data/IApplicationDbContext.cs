@@ -9,6 +9,8 @@ public interface IApplicationDbContext
     DbSet<CompanyInfoTranslation> CompanyInfoTranslations { get; }
     DbSet<Service> Services { get; }
     DbSet<ServiceTranslation> ServiceTranslations { get; }
+    DbSet<TeamMember> Team { get; }
+    DbSet<TeamMemberTranslation> TeamMemberTranslations { get; }
     DbSet<ContactMessage> ContactMessages { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
